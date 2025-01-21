@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Item;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -14,8 +15,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        // Fetch orders with related client and item data
-        $orders = Order::with(['client', 'item'])->paginate(10);
+        // Ambil semua order dengan relasi client dan item
+        $orders = Order::with(['client', 'item'])->latest()->get();
 
         return view('orders.index', compact('orders'));
     }
@@ -26,9 +27,10 @@ class OrderController extends Controller
     public function create()
     {
         // Fetch all clients and items for the dropdowns
-        $orders = Order::with(['client', 'item']);
+        $clients = Client::all();
+        $items = Item::all();
 
-        return view('orders.create', compact('orders'));
+        return view('orders.create', compact('clients', 'items'));
     }
 
     /**
@@ -37,18 +39,44 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
+            // $validated = $request->validate([
+            //     'clients_id' => 'required|exists:clients,id',
+            //     'items_id' => 'required|exists:items,id',
+            //     'quantity' => 'required|integer|min:1',
+            //     'total_price' => 'required|numeric|min:0',
+            //     'status' => 'required|string|in:pending,completed,canceled',
+            // ]);
+
+            $validatedData = $request->validate([
                 'clients_id' => 'required|exists:clients,id',
                 'items_id' => 'required|exists:items,id',
-                'quantity' => 'required|integer|min:1',
-                'total_price' => 'required|numeric|min:0',
+                'quantity' => 'required|numeric|min:1',
                 'status' => 'required|string|in:pending,completed,canceled',
             ]);
 
-            Order::create($validated);
-            return redirect()->route('orders.index')->with('success', 'Order successfully created!');
+            // Ambil item untuk pengecekan harga
+            $item = Item::findOrFail($request->items_id);
+            $totalPrice = $item->price * $request->quantity;
+
+            // Buat order baru
+            Order::create([
+                'clients_id' => $request->clients_id,
+                'items_id' => $request->items_id,
+                'quantity' => $request->quantity,
+                'total_price' => $totalPrice,
+                'status' => $request->status,
+            ]);
+
+            return redirect()->route('orders.index')
+                ->with('success', 'Order successfully created!');
+
+            // Order::create($validated);
+            // return redirect()->route('orders.index')->with('success', 'Order successfully created!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Gagal membuat order: ' . $e->getMessage())
+                ->withInput();
+            // return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 

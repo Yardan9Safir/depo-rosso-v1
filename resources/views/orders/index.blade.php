@@ -67,32 +67,37 @@
                                         <th scope="col" class="px-6 py-3 text-left">
                                             <div class="flex items-center gap-x-2">
                                                 <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">User Id</span>
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">User
+                                                    Id</span>
                                             </div>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left">
                                             <div class="flex items-center gap-x-2">
                                                 <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Item Id</span>
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Item
+                                                    Id</span>
                                             </div>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left">
                                             <div class="flex items-center gap-x-2">
                                                 <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Jumlah Barang
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Jumlah
+                                                    Barang
                                                 </span>
                                             </div>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left">
                                             <div class="flex items-center gap-x-2">
                                                 <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Total Harga</span>
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Total
+                                                    Harga</span>
                                             </div>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left">
                                             <div class="flex items-center gap-x-2">
                                                 <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Status Pesanan</span>
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800">Status
+                                                    Pesanan</span>
                                             </div>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left">
@@ -108,15 +113,15 @@
                                         <tr>
                                             <td class="px-6 py-3">
                                                 <span
-                                                    class="block text-sm font-semibold text-black-800">{{ $index + $orders->firstItem() }}</span>
+                                                    class="block text-sm font-semibold text-black-800">{{ $order->id }}</span>
                                             </td>
                                             <td class="px-6 py-3">
                                                 <span
-                                                    class="block text-sm font-semibold text-black-800">{{ $order->clients_id }}</span>
+                                                    class="block text-sm font-semibold text-black-800">{{ $order->client->name }}</span>
                                             </td>
                                             <td class="px-6 py-3">
                                                 <span
-                                                    class="block text-sm font-semibold text-black-800">{{ $order->items_id }}</span>
+                                                    class="block text-sm font-semibold text-black-800">{{ $order->item->name }}</span>
                                             </td>
                                             <td class="px-6 py-3">
                                                 <span
@@ -175,21 +180,21 @@
                                 class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
                                 <div>
                                     <p class="text-sm text-gray-600">
-                                        <span class="font-semibold text-gray-800">{{ $orders->total() }}</span> results
+                                        {{-- <span class="font-semibold text-gray-800">{{ $orders->total() }}</span> results --}}
                                     </p>
                                 </div>
 
                                 <div>
                                     <div class="inline-flex gap-x-2">
                                         <div>
-                                            {{ $orders->onFirstPage('vendor.pagination.depoRosso-default') ? '' : '' }}
+                                            {{-- {{ $orders->onFirstPage('vendor.pagination.depoRosso-default') ? '' : '' }} --}}
                                         </div>
                                         <!-- Pagination Links -->
                                         <div class="inline-flex items-center gap-x-2 text-sm font-medium">
-                                            {{ $orders->links('vendor.pagination.depoRosso-default') }}
+                                            {{-- {{ $orders->links('vendor.pagination.depoRosso-default') }} --}}
                                         </div>
                                         <div>
-                                            {{ $orders->hasMorePages('vendor.pagination.depoRosso-default') ? '' : '' }}
+                                            {{-- {{ $orders->hasMorePages('vendor.pagination.depoRosso-default') ? '' : '' }} --}}
                                         </div>
                                     </div>
                                 </div>

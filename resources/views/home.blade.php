@@ -1,1 +1,1 @@
-@include('clients.dashboard')
+@include('dashboard')

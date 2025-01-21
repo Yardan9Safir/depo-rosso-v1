@@ -50,7 +50,7 @@
                             <div class="flex items-center gap-5">
                                 <div class="flex gap-x-2">
                                     <img class="inline-block size-16 rounded-full ring-2 ring-white dark:ring-neutral-900"
-                                        src="{{ asset('storage/public/images/' . $user->photo_profile) }}"
+                                        src="{{ asset('storage/images/' . $user->photo_profile) }}"
                                         alt="Gambar Barang">
                                     <div>
                                         <input name="photo_profile" type="file"

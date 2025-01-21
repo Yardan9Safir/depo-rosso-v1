@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,6 @@ Route::prefix('clients')->group(function () {
     })->name('registerclient');
 });
 
-
 // Route::get('/users', function () {
 //     return view('users');
 // })->middleware(['auth', 'verified'])->name('users');
@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('items', ItemController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('users', ClientController::class);
+    Route::resource('laporan', LaporanController::class);
 });
 
 

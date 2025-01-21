@@ -117,7 +117,7 @@
                                             </td>
                                             <td class="px-6 py-3">
                                                 <img class="text-center h-16 w-16 rounded-full mx-auto"
-                                                    src="{{ asset('storage/public/images/' . $item->photo_item) }}"
+                                                    src="{{ asset('storage/images/' . $item->photo_item) }}"
                                                     alt="Gambar Barang">
                                             </td>
                                             <td class="px-6 py-3">

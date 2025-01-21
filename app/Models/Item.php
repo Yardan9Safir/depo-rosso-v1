@@ -15,4 +15,16 @@ class Item extends Model
         'price',
         'quantity'
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'items_id');
+    }
+
+    public function order()
+    {
+        return $this->belongsToMany(Order::class, 'order_item')
+            ->withPivot('quantity', 'price')
+            ->withTimestamps();
+    }
 }

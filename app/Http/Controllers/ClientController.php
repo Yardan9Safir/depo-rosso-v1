@@ -47,7 +47,7 @@ class ClientController extends Controller
                 $imageName = time() . '.' . $image->extension();
 
                 // Store the image in the storage/public directory
-                $image->storeAs('public/images', $imageName);
+                $image->storeAs('images/', $imageName);
             } else {
                 return back()->with('error', 'Invalid image file.');
             }
@@ -78,53 +78,46 @@ class ClientController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate input data
+        // Validasi data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'photo_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Make photo_profile optional during update
-            'email' => 'nullable|string|email|max:255|unique:clients,email,' . $id, // Ensure unique email but ignore the current client's email
-            'address' => 'required|string', // Address should be a string, not numeric
-            'password' => 'nullable|string', // Password should be nullable and confirmed for updating
+            'photo_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Gambar opsional
+            'email' => 'nullable|string|email|max:255|unique:clients,email,' . $id, // Email harus unik kecuali milik klien saat ini
+            'address' => 'required|string', // Alamat harus berupa string
+            'password' => 'nullable|string', // Password opsional dan hanya diupdate jika diisi
         ]);
 
-        // Only hash the password if it's being updated
+        // Hash password jika diisi
         if ($request->filled('password')) {
-            $validated['password'] = bcrypt($validated['password']); // Hash the password
+            $validated['password'] = bcrypt($validated['password']);
         }
 
-        $imageName = null;
+        // Cari klien berdasarkan ID
+        $client = Client::findOrFail($id);
 
-        // Handle image upload if it exists
+        // Tangani pengunggahan gambar jika ada
         if ($request->hasFile('photo_profile')) {
-            $image = $request->file('photo_profile');
-
-            // Validate if the image is valid
-            if ($image->isValid()) {
-                // Generate a unique image name
-                $imageName = time() . '.' . $image->extension();
-
-                // Store the image in the storage/public directory
-                $image->storeAs('public/images', $imageName);
-            } else {
-                return back()->with('error', 'Invalid image file.');
+            // Hapus gambar lama jika ada
+            if ($client->photo_profile) {
+                Storage::disk('public')->delete('images/' . $client->photo_profile);
             }
-        }
 
-        // Only add the image name to the validated data if a new image was uploaded
-        if ($imageName) {
+            // Simpan gambar baru
+            $imageName = time() . '.' . $request->file('photo_profile')->extension();
+            $request->file('photo_profile')->storeAs('images', $imageName, 'public');
             $validated['photo_profile'] = $imageName;
         }
 
-        // Find and update the client record
+        // Perbarui data klien
         try {
-            $client = Client::findOrFail($id);
             $client->update($validated);
 
             return redirect()->route('users.index')->with('success', 'Item berhasil diperbarui!');
         } catch (Exception $e) {
-            return back()->with('error', 'Failed to update item: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui item: ' . $e->getMessage());
         }
     }
+
 
     public function destroy($id)
     {
@@ -134,7 +127,7 @@ class ClientController extends Controller
 
             // Check if the client has a photo and delete it from storage
             if ($client->photo_profile) {
-                $imagePath = 'public/images/' . $client->photo_profile;
+                $imagePath = 'images/' . $client->photo_profile;
                 if (Storage::exists($imagePath)) {
                     Storage::delete($imagePath); // Delete the image file
                 }

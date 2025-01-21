@@ -108,7 +108,7 @@
                                             </td>
                                             <td class="px-6 py-3">
                                                 <img class="text-center h-16 w-16 rounded-full mx-auto"
-                                                    src="{{ asset('storage/public/images/' . $client->photo_profile) }}"
+                                                    src="{{ asset('storage/images/' . $client->photo_profile) }}"
                                                     alt="Gambar Barang">
                                             </td>
                                             <td class="px-6 py-3">

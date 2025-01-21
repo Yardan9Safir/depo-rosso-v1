@@ -41,7 +41,7 @@
 
                         <div class="sm:col-span-3">
                             <label for="af-account-password" class="inline-block text-sm text-gray-800 mt-2.5">
-                                Client ID
+                                Users ID
                             </label>
                         </div>
                         <!-- End Col -->
@@ -50,8 +50,8 @@
                             <select name="items_id"
                                 class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">Pilih Client</option>
-                                @foreach ($orders as $order)
-                                    <option value="{{ $order->client_id }}"></option>
+                                @foreach ($clients as $client)
+                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
                                 @endforeach
                             </select>
                             {{-- <input id="af-account-bio" name="users_id"
@@ -76,8 +76,8 @@
                             <select name="items_id"
                                 class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">Pilih Item</option>
-                                @foreach ($orders as $order)
-                                    <option>{{ $order->items_id }}</option>
+                                @foreach ($items as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
                             @error('items_id')
@@ -150,7 +150,7 @@
                             Cancel
                         </a>
 
-                        <button
+                        <button type="submit"
                             class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-[#4D44B5] text-white hover:bg-blue-900 dark:bg-black dark:hover:bg-neutral-700 focus:outline-none focus:bg-blue-900 dark:focus:bg-neutral-700 disabled:opacity-50 disabled:pointer-events-none">
                             Save Changes
                         </button>
@@ -160,5 +160,81 @@
             <!-- End Card -->
         </div>
         <!-- End Card Section -->
+
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0">Tambah Order Baru</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('orders.store') }}" method="POST">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="form-label">Pilih Client</label>
+                                    <select name="clients_id"
+                                        class="form-select @error('clients_id') is-invalid @enderror">
+                                        <option value="">Pilih Client</option>
+                                        @foreach ($clients as $client)
+                                            <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('clients_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Pilih Item</label>
+                                    <select name="items_id" class="form-select @error('items_id') is-invalid @enderror">
+                                        <option value="">Pilih Item</option>
+                                        @foreach ($items as $item)
+                                            <option value="{{ $item->id }}">
+                                                {{ $item->name }} - Rp.
+                                                {{ number_format($item->price, 0, ',', '.') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('items_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" name="quantity"
+                                        class="form-control @error('quantity') is-invalid @enderror"
+                                        value="{{ old('quantity') }}" min="1">
+                                    @error('quantity')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <select name="status"
+                                        class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="canceled">Canceled</option>
+                                    </select>
+                                    {{-- <input id="af-account-bio" name="status"
+                                class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                                placeholder="1" type="text"></input> --}}
+                                    @error('status')
+                                        <x-input-error :messages="$errors->get('status')" class="mt-2" />
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary">Buat Order</button>
+                                    <a href="{{ route('orders.index') }}" class="btn btn-secondary">Batal</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </x-app-layout>

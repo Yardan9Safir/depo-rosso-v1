@@ -38,7 +38,7 @@ class ItemController extends Controller
 
         if ($request->photo_item) {
             $imagedName = time() . '.' . $request->file('photo_item')->extension();
-            $request->photo_item->storeAs('public/images/', $imagedName);
+            $request->photo_item->storeAs('images/', $imagedName);
         }
 
         // Add the image name to the validated data before creating the item
@@ -75,32 +75,33 @@ class ItemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'photo_item' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'required|nullable|string',
+            'photo_item' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Buat photo_item tidak wajib
+            'description' => 'nullable|string',
             'price' => 'required|numeric',
             'quantity' => 'required|numeric'
         ]);
 
-        $imagedName = null;
+        $item = Item::findOrFail($id);
 
+        // Hapus gambar lama jika ada file baru diupload
         if ($request->hasFile('photo_item')) {
-            $imagedName = time() . '.' . $request->file('photo_item')->extension();
-            $request->photo_item->storeAs('public/images', $imagedName);  // Removed the trailing slash from the directory name
-        }
+            // Hapus gambar lama jika exists
+            if ($item->photo_item) {
+                Storage::disk('public')->delete('images/' . $item->photo_item);
+            }
 
-        // Only include the image name if a new image was uploaded
-        if ($imagedName) {
+            // Upload gambar baru
+            $imagedName = time() . '.' . $request->file('photo_item')->extension();
+            $request->photo_item->storeAs('images/', $imagedName);
             $validated['photo_item'] = $imagedName;
         }
 
-        $item = Item::findOrFail($id);
+
+        // Update item
         $item->update($validated);
 
         return redirect()->route('items.index')->with('success', 'Item berhasil diperbarui!');
-
     }
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -110,22 +111,31 @@ class ItemController extends Controller
             // Find the item by ID
             $item = Item::findOrFail($id);
 
-            // Check if the item has an image and delete it from storage
-            if ($item->image) {
-                $imagePath = 'public/images/' . $item->image;
-                if (Storage::exists($imagePath)) {
-                    Storage::delete($imagePath); // Delete the image file
+            // Hapus gambar jika ada
+            if ($item->photo_item) {
+                try {
+                    $imagePath = 'images/' . $item->photo_item;
+                    if (Storage::exists($imagePath)) {
+                        Storage::delete($imagePath);
+                    }
+                } catch (Exception $imageError) {
+                    // Log error penghapusan gambar
+                    $imageError->getMessage();
                 }
             }
 
-            // Delete the item record
+            // Hapus item dari database
             $item->delete();
 
-            // Redirect back with success message
+            // Redirect dengan pesan sukses
             return redirect()->route('items.index')->with('success', 'Item berhasil dihapus!');
+
         } catch (Exception $error) {
-            // Return the error message if an exception occurs
-            return $error->getMessage();
+            // Log error
+            $error->getMessage();
+
+            // Redirect dengan pesan error
+            return redirect()->route('items.index')->with('error', 'Gagal menghapus item: ' . $error->getMessage());
         }
     }
 }

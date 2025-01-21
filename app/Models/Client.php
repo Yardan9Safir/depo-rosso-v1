@@ -15,4 +15,9 @@ class Client extends Model
         'address',
         'password'
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'clients_id');
+    }
 }
